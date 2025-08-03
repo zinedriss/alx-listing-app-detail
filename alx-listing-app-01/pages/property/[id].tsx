@@ -1,38 +1,62 @@
-// pages/property/[id].tsx
+// components/property/BookingSection.tsx
 
-import PropertyDetail from "@/components/property/PropertyDetail";
-import { PROPERTYLISTINGSAMPLE } from "@/constants/index";
-import { useRouter } from "next/router";
-import Head from "next/head";
+import { useState, useEffect } from "react";
 
-export default function PropertyPage() {
-  const router = useRouter();
-  // The router query might not be available on initial render, so we check for it.
-  const { id } = router.query;
+const BookingSection: React.FC<{ price: number }> = ({ price }) => {
+  const [checkIn, setCheckIn] = useState("");
+  const [checkOut, setCheckOut] = useState("");
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [nights, setNights] = useState(0);
 
-  // Find the property based on the 'id' from the URL.
-  // In a real app, this would be an API call: e.g., useSWR('/api/properties/' + id)
-  const property = PROPERTYLISTINGSAMPLE.find((item) => item.id === id);
+  useEffect(() => {
+    if (checkIn && checkOut) {
+      const startDate = new Date(checkIn);
+      const endDate = new Date(checkOut);
+      const diffTime = endDate.getTime() - startDate.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-  // Show a loading state while the router is warming up
-  if (router.isFallback || !id) {
-    return <p>Loading...</p>;
-  }
-
-  // If no property is found for the given id
-  if (!property) {
-    return <p className="text-center text-xl mt-10">Property not found</p>;
-  }
-
+      if (diffDays > 0) {
+        setNights(diffDays);
+        setTotalPrice(diffDays * price);
+      } else {
+        setNights(0);
+        setTotalPrice(0);
+      }
+    }
+  }, [checkIn, checkOut, price]);
+  
   return (
-    <>
-      <Head>
-        <title>{property.name} - Listing App</title>
-        <meta name="description" content={property.description} />
-      </Head>
-      <main className="bg-gray-50 min-h-screen">
-        <PropertyDetail property={property} />
-      </main>
-    </>
+    <div className="bg-white p-6 shadow-lg rounded-xl border">
+      <h3 className="text-2xl font-semibold">${price}/night</h3>
+      <div className="mt-4 grid grid-cols-1 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Check-in</label>
+          <input type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} className="mt-1 border p-2 w-full rounded-md" />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Check-out</label>
+          <input type="date" value={checkOut} onChange={(e) => setCheckOut(e.target.value)} className="mt-1 border p-2 w-full rounded-md" />
+        </div>
+      </div>
+      
+      {nights > 0 && (
+        <div className="mt-6 border-t pt-4 space-y-2">
+            <div className="flex justify-between text-gray-600">
+                <span>${price} x {nights} nights</span>
+                <span>${price * nights}</span>
+            </div>
+            <div className="flex justify-between font-bold text-lg">
+                <span>Total payment</span>
+                <strong>${totalPrice}</strong>
+            </div>
+        </div>
+      )}
+
+      <button className="mt-6 w-full bg-green-500 text-white py-3 rounded-md hover:bg-green-600 font-semibold" disabled={nights <= 0}>
+        Reserve now
+      </button>
+    </div>
   );
-}
+};
+
+export default BookingSection;

@@ -1,5 +1,6 @@
 // interfaces/index.ts
 
+// No changes needed here, but ensure it exists and is correct.
 export interface AddressProps {
   city: string;
   country: string;
@@ -7,7 +8,7 @@ export interface AddressProps {
 
 export interface ReviewProps {
   avatar: string;
-  name: string;
+  name:string;
   rating: number;
   comment: string;
 }
@@ -19,15 +20,14 @@ export interface HostProps {
 }
 
 export interface PropertyProps {
-  id: string;
-  name: string;
+  name: string; // The primary identifier as per instructions
   rating: number;
   reviewsCount: number;
   address: AddressProps;
-  image: string; // The main image
-  images: string[]; // A list of additional images for the grid
+  image: string;
+  images: string[];
   description: string;
-  category: string[]; // Represents amenities
+  category: string[]; // Amenities
   price: number;
   reviews: ReviewProps[];
   host: HostProps;

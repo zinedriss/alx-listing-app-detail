@@ -4,36 +4,32 @@ import { ReviewProps } from "@/interfaces/index";
 import { FaStar } from "react-icons/fa";
 
 const StarRating = ({ rating }: { rating: number }) => {
-  const stars = [];
-  for (let i = 0; i < 5; i++) {
-    stars.push(
-      <FaStar key={i} className={i < rating ? "text-yellow-500" : "text-gray-300"} />
-    );
-  }
-  return <div className="flex items-center">{stars}</div>;
+  return (
+    <div className="flex items-center">
+      {[...Array(5)].map((_, i) => (
+        <FaStar key={i} className={i < Math.round(rating) ? "text-yellow-500" : "text-gray-300"} />
+      ))}
+    </div>
+  );
 };
 
 const ReviewSection: React.FC<{ reviews: ReviewProps[] }> = ({ reviews }) => {
-  if (!reviews || reviews.length === 0) {
-    return <p className="text-gray-500">No reviews yet.</p>;
-  }
-
   return (
-    <div className="space-y-6">
+    <div className="mt-8 space-y-6">
+      <h3 className="text-2xl font-semibold">Reviews</h3>
       {reviews.map((review, index) => (
-        <div key={index} className="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-4">
-          <img
-            src={review.avatar}
-            alt={review.name}
-            className="w-12 h-12 rounded-full object-cover"
-          />
-          <div className="flex-1">
-            <div className="flex items-center justify-between">
-              <h4 className="font-bold text-gray-800">{review.name}</h4>
-              <StarRating rating={review.rating} />
+        <div key={index} className="border-b pb-4">
+          <div className="flex items-center mb-2">
+            <img src={review.avatar} alt={review.name} className="w-12 h-12 rounded-full mr-4" />
+            <div>
+              <p className="font-bold">{review.name}</p>
+              <div className="flex items-center">
+                <StarRating rating={review.rating} />
+                <span className="ml-2 text-gray-600">{review.rating} stars</span>
+              </div>
             </div>
-            <p className="mt-2 text-gray-600">{review.comment}</p>
           </div>
+          <p className="text-gray-700">{review.comment}</p>
         </div>
       ))}
     </div>
